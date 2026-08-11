@@ -1,10 +1,21 @@
 import { Resend } from 'resend';
 import { config } from '../config.js';
 
-const resend = new Resend(config.resend.apiKey);
+// Constructed lazily: Resend's constructor throws synchronously when the key
+// is empty, and doing that at module load would crash the whole process on
+// boot if RESEND_API_KEY isn't set. Deferring it means a missing key only
+// breaks email sending (as config.ts already warns), not the entire server.
+let resend: Resend | null = null;
+function getClient(): Resend {
+  if (!config.resend.apiKey) {
+    throw new Error('RESEND_API_KEY is not set - cannot send email.');
+  }
+  if (!resend) resend = new Resend(config.resend.apiKey);
+  return resend;
+}
 
 async function send(to: string, subject: string, html: string): Promise<void> {
-  const { error } = await resend.emails.send({
+  const { error } = await getClient().emails.send({
     from: config.resend.fromEmail,
     to,
     subject,
