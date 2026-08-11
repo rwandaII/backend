@@ -171,6 +171,13 @@ const productSchema = z.object({
   discontinued: z.coerce.boolean().optional(),
   image: z.string().trim().max(500).optional(),
   description: z.string().trim().max(5000).optional(),
+  // Amazon-style page fields.
+  features: z.array(z.string().trim().min(1).max(500)).max(20).optional(),
+  specifications: z.record(z.string(), z.string().trim().max(500)).optional(),
+  amazonUrl: z.string().trim().max(1000).url().optional().or(z.literal('')),
+  howToUse: z.string().trim().max(4000).optional(),
+  howToMaintain: z.string().trim().max(4000).optional(),
+  ingredients: z.string().trim().max(4000).optional(),
 });
 
 adminCatalogRouter.get('/products', async (req, res) => {
@@ -233,13 +240,19 @@ adminCatalogRouter.post('/products', async (req, res) => {
 
   const { rows } = await pool.query(
     `INSERT INTO products
-       (subcategory_id, name, slug, brand, barcode, unit_price, vat_rate, currency, qty_in_stock, discontinued, image, description)
-     VALUES ($1,$2,$3,$4,$5,$6,COALESCE($7,0.18),COALESCE($8,'RWF'),COALESCE($9,0),COALESCE($10,false),$11,$12)
+       (subcategory_id, name, slug, brand, barcode, unit_price, vat_rate, currency, qty_in_stock, discontinued, image, description, features, specifications, amazon_url, how_to_use, how_to_maintain, ingredients)
+     VALUES ($1,$2,$3,$4,$5,$6,COALESCE($7,0.18),COALESCE($8,'RWF'),COALESCE($9,0),COALESCE($10,false),$11,$12,COALESCE($13,'[]'::jsonb),COALESCE($14,'{}'::jsonb),$15,$16,$17,$18)
      RETURNING *`,
     [
       p.subcategoryId, p.name, slug, p.brand ?? null, p.barcode ?? null,
       p.unitPrice ?? null, p.vatRate ?? null, p.currency ?? null,
       p.qtyInStock ?? null, p.discontinued ?? null, p.image ?? null, p.description ?? null,
+      p.features ? JSON.stringify(p.features) : null,
+      p.specifications ? JSON.stringify(p.specifications) : null,
+      p.amazonUrl || null,
+      p.howToUse ?? null,
+      p.howToMaintain ?? null,
+      p.ingredients ?? null,
     ]
   );
   await afterWrite();
@@ -266,12 +279,24 @@ adminCatalogRouter.put('/products/:id', async (req, res) => {
        discontinued = COALESCE($11, discontinued),
        image = COALESCE($12, image),
        description = COALESCE($13, description),
+       features = COALESCE($14, features),
+       specifications = COALESCE($15, specifications),
+       amazon_url = COALESCE($16, amazon_url),
+       how_to_use = COALESCE($17, how_to_use),
+       how_to_maintain = COALESCE($18, how_to_maintain),
+       ingredients = COALESCE($19, ingredients),
        updated_at = now()
      WHERE id = $1 RETURNING *`,
     [
       req.params.id, p.subcategoryId ?? null, p.name ?? null, slug ?? null,
       p.brand ?? null, p.barcode ?? null, p.unitPrice ?? null, p.vatRate ?? null,
       p.currency ?? null, p.qtyInStock ?? null, p.discontinued ?? null, p.image ?? null, p.description ?? null,
+      p.features ? JSON.stringify(p.features) : null,
+      p.specifications ? JSON.stringify(p.specifications) : null,
+      p.amazonUrl || null,
+      p.howToUse ?? null,
+      p.howToMaintain ?? null,
+      p.ingredients ?? null,
     ]
   );
   if (!rows[0]) return fail(res, 404, 'Product not found.', 'NOT_FOUND');

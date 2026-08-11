@@ -1,0 +1,395 @@
+[
+  {
+    "base": "MEDICAL DOCTOR'S WHITE COAT LONG SLEEVE WITH BLUE DESIGN",
+    "count": 5,
+    "ids": [
+      566,
+      565,
+      564,
+      567,
+      568
+    ],
+    "names": [
+      "MEDICAL DOCTOR'S WHITE COAT LONG SLEEVE WITH BLUE DESIGN LARGE",
+      "MEDICAL DOCTOR'S WHITE COAT LONG SLEEVE WITH BLUE DESIGN MEDIUM",
+      "MEDICAL DOCTOR'S WHITE COAT LONG SLEEVE WITH BLUE DESIGN SMALL",
+      "MEDICAL DOCTOR'S WHITE COAT LONG SLEEVE WITH BLUE DESIGN X-LARGE",
+      "MEDICAL DOCTOR'S WHITE COAT LONG SLEEVE WITH BLUE DESIGN XX-LARGE"
+    ],
+    "brand": "MEDICAL",
+    "category": "MEDICAL DEVICES & HOSPITAL NEEDS",
+    "subcategory": "MEDICAL DOCTOR'S LAB COAT WHITE WITH BLUE DESIGN LONG SLEEVE"
+  },
+  {
+    "base": "NURSE'S WHITE COAT STOPPER SLEEVE WITH BLUE DESIGN",
+    "count": 5,
+    "ids": [
+      576,
+      575,
+      574,
+      577,
+      578
+    ],
+    "names": [
+      "NURSE'S WHITE COAT STOPPER SLEEVE WITH BLUE DESIGN LARGE",
+      "NURSE'S WHITE COAT STOPPER SLEEVE WITH BLUE DESIGN MEDIUM",
+      "NURSE'S WHITE COAT STOPPER SLEEVE WITH BLUE DESIGN SMALL",
+      "NURSE'S WHITE COAT STOPPER SLEEVE WITH BLUE DESIGN X-LARGE",
+      "NURSE'S WHITE COAT STOPPER SLEEVE WITH BLUE DESIGN XX-LARGE"
+    ],
+    "brand": "NURSES",
+    "category": "MEDICAL DEVICES & HOSPITAL NEEDS",
+    "subcategory": "MEDICAL NURSE'S LAB COAT WHITE STOPPER SLEEVE"
+  },
+  {
+    "base": "BABE BIBERON 250 ML",
+    "count": 1,
+    "ids": [
+      180
+    ],
+    "names": [
+      "BABE BIBERON 250 ML"
+    ],
+    "brand": "BABE",
+    "category": "BABY RANGE",
+    "subcategory": "BABY BOTTLES & OTHER DINNING UTENSILS"
+  },
+  {
+    "base": "BABE TEATINE",
+    "count": 1,
+    "ids": [
+      174
+    ],
+    "names": [
+      "BABE TEATINE"
+    ],
+    "brand": "BABE",
+    "category": "BABY RANGE",
+    "subcategory": "BABY BOTTLES & OTHER DINNING UTENSILS"
+  },
+  {
+    "base": "BAG",
+    "count": 1,
+    "ids": [
+      650
+    ],
+    "names": [
+      "SMALL BAG"
+    ],
+    "brand": "SMALL",
+    "category": "HOUSEHOLD & HOME NEEDS PRODUCTS",
+    "subcategory": "HOUSEHOLD & HOME NEEDS PRODUCTS"
+  },
+  {
+    "base": "BABY HALER DEVICES",
+    "count": 1,
+    "ids": [
+      645
+    ],
+    "names": [
+      "BABY HALER DEVICES"
+    ],
+    "brand": "BABY",
+    "category": "MEDICAL DEVICES & HOSPITAL NEEDS",
+    "subcategory": "OTHER MEDICAL DEVICES & PARAPHARMACEUTICALS"
+  },
+  {
+    "base": "RD, JAN, 2024",
+    "count": 1,
+    "ids": [
+      1588
+    ],
+    "names": [
+      "3 rd, JAN, 2024"
+    ],
+    "brand": null,
+    "category": "OTHERS",
+    "subcategory": "NEEDS CATEGORY REVIEW"
+  },
+  {
+    "base": "ASSOUMPTA MBARUSHIMANA",
+    "count": 1,
+    "ids": [
+      1299
+    ],
+    "names": [
+      "ASSOUMPTA MBARUSHIMANA"
+    ],
+    "brand": null,
+    "category": "OTHERS",
+    "subcategory": "NEEDS CATEGORY REVIEW"
+  },
+  {
+    "base": "BAD",
+    "count": 1,
+    "ids": [
+      1410
+    ],
+    "names": [
+      "BAD"
+    ],
+    "brand": null,
+    "category": "OTHERS",
+    "subcategory": "NEEDS CATEGORY REVIEW"
+  },
+  {
+    "base": "DECEMBER",
+    "count": 1,
+    "ids": [
+      1381
+    ],
+    "names": [
+      "DECEMBER"
+    ],
+    "brand": null,
+    "category": "OTHERS",
+    "subcategory": "NEEDS CATEGORY REVIEW"
+  },
+  {
+    "base": "DONE ON:",
+    "count": 1,
+    "ids": [
+      1298
+    ],
+    "names": [
+      "DONE ON:"
+    ],
+    "brand": null,
+    "category": "OTHERS",
+    "subcategory": "NEEDS CATEGORY REVIEW"
+  },
+  {
+    "base": "DONE ON: 20TH, OCT, 2024",
+    "count": 1,
+    "ids": [
+      1875
+    ],
+    "names": [
+      "DONE ON: 20th, Oct, 2024"
+    ],
+    "brand": null,
+    "category": "OTHERS",
+    "subcategory": "NEEDS CATEGORY REVIEW"
+  },
+  {
+    "base": "FEBRUALY",
+    "count": 1,
+    "ids": [
+      1383
+    ],
+    "names": [
+      "FEBRUALY"
+    ],
+    "brand": null,
+    "category": "OTHERS",
+    "subcategory": "NEEDS CATEGORY REVIEW"
+  },
+  {
+    "base": "GRACE",
+    "count": 1,
+    "ids": [
+      1395
+    ],
+    "names": [
+      "GRACE"
+    ],
+    "brand": null,
+    "category": "OTHERS",
+    "subcategory": "NEEDS CATEGORY REVIEW"
+  },
+  {
+    "base": "HIGH OCTANE PREDATOR B/",
+    "count": 1,
+    "ids": [
+      1911
+    ],
+    "names": [
+      "HIGH OCTANE PREDATOR B/60"
+    ],
+    "brand": null,
+    "category": "OTHERS",
+    "subcategory": "NEEDS CATEGORY REVIEW"
+  },
+  {
+    "base": "INCL. BTW",
+    "count": 1,
+    "ids": [
+      1914
+    ],
+    "names": [
+      "Incl. BTW"
+    ],
+    "brand": null,
+    "category": "OTHERS",
+    "subcategory": "NEEDS CATEGORY REVIEW"
+  },
+  {
+    "base": "JANUARY",
+    "count": 1,
+    "ids": [
+      1382
+    ],
+    "names": [
+      "JANUARY"
+    ],
+    "brand": null,
+    "category": "OTHERS",
+    "subcategory": "NEEDS CATEGORY REVIEW"
+  },
+  {
+    "base": "LE , SEPTEMBRE,2022",
+    "count": 1,
+    "ids": [
+      1274
+    ],
+    "names": [
+      "LE 16, SEPTEMBRE,2022"
+    ],
+    "brand": null,
+    "category": "OTHERS",
+    "subcategory": "NEEDS CATEGORY REVIEW"
+  },
+  {
+    "base": "NOM DU PRODUITS",
+    "count": 1,
+    "ids": [
+      1487
+    ],
+    "names": [
+      "NOM DU PRODUITS"
+    ],
+    "brand": null,
+    "category": "OTHERS",
+    "subcategory": "NEEDS CATEGORY REVIEW"
+  },
+  {
+    "base": "NOVEMBER",
+    "count": 1,
+    "ids": [
+      1380
+    ],
+    "names": [
+      "NOVEMBER"
+    ],
+    "brand": null,
+    "category": "OTHERS",
+    "subcategory": "NEEDS CATEGORY REVIEW"
+  },
+  {
+    "base": "NUMBER",
+    "count": 1,
+    "ids": [
+      1633
+    ],
+    "names": [
+      "NUMBER"
+    ],
+    "brand": null,
+    "category": "OTHERS",
+    "subcategory": "NEEDS CATEGORY REVIEW"
+  },
+  {
+    "base": "OCTOBER",
+    "count": 1,
+    "ids": [
+      1379
+    ],
+    "names": [
+      "OCTOBER"
+    ],
+    "brand": null,
+    "category": "OTHERS",
+    "subcategory": "NEEDS CATEGORY REVIEW"
+  },
+  {
+    "base": "PRODUCTS NAMES",
+    "count": 1,
+    "ids": [
+      1340
+    ],
+    "names": [
+      "PRODUCTS NAMES"
+    ],
+    "brand": null,
+    "category": "OTHERS",
+    "subcategory": "NEEDS CATEGORY REVIEW"
+  },
+  {
+    "base": "SEPTEMBER",
+    "count": 1,
+    "ids": [
+      1378
+    ],
+    "names": [
+      "SEPTEMBER"
+    ],
+    "brand": null,
+    "category": "OTHERS",
+    "subcategory": "NEEDS CATEGORY REVIEW"
+  },
+  {
+    "base": "UPDATED ON: 13TH, AUGUST, 2024",
+    "count": 1,
+    "ids": [
+      1339
+    ],
+    "names": [
+      "UPDATED ON: 13th, AUGUST, 2024"
+    ],
+    "brand": null,
+    "category": "OTHERS",
+    "subcategory": "NEEDS CATEGORY REVIEW"
+  },
+  {
+    "base": "TARGET COTTON SWABS B/ PINK",
+    "count": 1,
+    "ids": [
+      514
+    ],
+    "names": [
+      "TARGET COTTON SWABS B/100 PINK"
+    ],
+    "brand": "TARGET",
+    "category": "PERSONAL CARE & HYGIENICS",
+    "subcategory": "PERSONAL CARE & HYGIENICS"
+  },
+  {
+    "base": "TARGET TIGE COTTON B/ BLUE",
+    "count": 1,
+    "ids": [
+      512
+    ],
+    "names": [
+      "TARGET TIGE COTTON B/100 BLUE"
+    ],
+    "brand": "TARGET",
+    "category": "PERSONAL CARE & HYGIENICS",
+    "subcategory": "PERSONAL CARE & HYGIENICS"
+  },
+  {
+    "base": "TARGET TIGE COTTON B/100 GREEN",
+    "count": 1,
+    "ids": [
+      513
+    ],
+    "names": [
+      "TARGET TIGE COTTON B/100 GREEN"
+    ],
+    "brand": "TARGET",
+    "category": "PERSONAL CARE & HYGIENICS",
+    "subcategory": "PERSONAL CARE & HYGIENICS"
+  },
+  {
+    "base": "TARGET TIGE COTTON B/ WHITE",
+    "count": 1,
+    "ids": [
+      511
+    ],
+    "names": [
+      "TARGET TIGE COTTON B/100 WHITE"
+    ],
+    "brand": "TARGET",
+    "category": "PERSONAL CARE & HYGIENICS",
+    "subcategory": "PERSONAL CARE & HYGIENICS"
+  }
+]

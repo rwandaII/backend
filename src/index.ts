@@ -26,7 +26,7 @@ import { catalogPublicRouter } from './routes/catalog-public.js';
 import { trackRouter } from './routes/track.js';
 import { adminAnalyticsRouter } from './routes/admin-analytics.js';
 import { adminReportsRouter } from './routes/admin-reports.js';
-import { listOrders } from './orders.js';
+import { adminOrdersRouter } from './routes/admin-orders.js';
 
 const app = express();
 
@@ -81,9 +81,7 @@ app.use('/api/auth', authRouter);
 app.use('/api/admin/auth/login', authLimiter);
 app.use('/api/admin/auth', adminAuthRouter);
 
-app.get('/api/admin/orders', requireAdminAuth, async (_req, res) => {
-  res.json({ ok: true, orders: await listOrders() });
-});
+app.use('/api/admin/orders', requireAdminAuth, adminOrdersRouter);
 app.use('/api/admin/catalog', requireAdminAuth, adminCatalogRouter);
 app.use('/api/admin/admins', requireAdminAuth, adminAdminsRouter);
 app.use('/api/admin/users', requireAdminAuth, adminUsersRouter);

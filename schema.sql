@@ -52,11 +52,49 @@ CREATE TABLE IF NOT EXISTS products (
 -- new columns need their own idempotent statement to reach it too.
 ALTER TABLE products ADD COLUMN IF NOT EXISTS description TEXT;
 
+-- Amazon-style product page fields. features = ["bullet one", "bullet two", ...]
+-- (the "About this item" list). specifications = {"Weight": "800g", "Brand": "Nestle", ...}
+-- (the spec table). amazon_url is only a research reference for whoever is
+-- filling these in from a real Amazon listing - never shown to customers.
+ALTER TABLE products ADD COLUMN IF NOT EXISTS features JSONB NOT NULL DEFAULT '[]'::jsonb;
+ALTER TABLE products ADD COLUMN IF NOT EXISTS specifications JSONB NOT NULL DEFAULT '{}'::jsonb;
+ALTER TABLE products ADD COLUMN IF NOT EXISTS amazon_url TEXT;
+
+-- Full step-by-step "how to use / how to prepare" guide, written for a first-time
+-- user. Shown in its own section on the product page, separate from the short
+-- "About this item" bullets - mirrors the "Directions" section real Amazon
+-- listings have.
+ALTER TABLE products ADD COLUMN IF NOT EXISTS how_to_use TEXT;
+
+-- Separate from how_to_use: care/storage/replacement guidance for this specific
+-- product (e.g. "replace the head every 3 months", "store below 25°C out of
+-- sunlight"). Must stay product-specific, not the same boilerplate reused
+-- across items.
+ALTER TABLE products ADD COLUMN IF NOT EXISTS how_to_maintain TEXT;
+
+-- Full ingredients list (INCI/label-style), e.g. "Water, Zinc Oxide, Glycerin, ..."
+-- for anything with a real ingredient list - food, formula, cosmetics, toothpaste,
+-- creams, sprays. Left null for pure hardware (bottles, brushes, clippers) where
+-- an ingredients list doesn't apply. Shown in its own section on the product page.
+ALTER TABLE products ADD COLUMN IF NOT EXISTS ingredients TEXT;
+
 CREATE INDEX IF NOT EXISTS idx_subcategories_category_id ON subcategories(category_id);
 CREATE INDEX IF NOT EXISTS idx_products_subcategory_id ON products(subcategory_id);
 CREATE INDEX IF NOT EXISTS idx_products_slug ON products(slug);
 CREATE INDEX IF NOT EXISTS idx_products_name_trgm ON products USING gin (to_tsvector('simple', name));
 CREATE INDEX IF NOT EXISTS idx_products_name_similarity ON products USING gin (name gin_trgm_ops);
+
+-- Extra gallery photos beyond the cover shown everywhere else (products.image).
+-- A product with rows here gets a slideshow on its detail page.
+CREATE TABLE IF NOT EXISTS product_images (
+  id          SERIAL PRIMARY KEY,
+  product_id  INTEGER NOT NULL REFERENCES products(id) ON DELETE CASCADE,
+  image       TEXT NOT NULL,
+  sort_order  INTEGER NOT NULL DEFAULT 0,
+  created_at  TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS idx_product_images_product_id ON product_images(product_id);
 
 -- Dashboard operators (email + password login for /admin).
 CREATE TABLE IF NOT EXISTS admins (
@@ -214,3 +252,12 @@ CREATE TABLE IF NOT EXISTS page_views (
 CREATE INDEX IF NOT EXISTS idx_page_views_visitor_id ON page_views(visitor_id);
 CREATE INDEX IF NOT EXISTS idx_page_views_product_id ON page_views(product_id);
 CREATE INDEX IF NOT EXISTS idx_page_views_created_at ON page_views(created_at);
+
+-- Hand-curated homepage "Popular products" rail. Unlike most-viewed rankings
+-- (which surface whatever the crawler/random clicks turned up - fine for
+-- category rails, but too unpredictable for the homepage's most prominent
+-- section), this is an editorial pick: real price, real stock, a clean
+-- correctly-branded photo. featured_sort_order controls display order
+-- (lower first); NULL sorts last.
+ALTER TABLE products ADD COLUMN IF NOT EXISTS is_featured BOOLEAN NOT NULL DEFAULT false;
+ALTER TABLE products ADD COLUMN IF NOT EXISTS featured_sort_order INTEGER;

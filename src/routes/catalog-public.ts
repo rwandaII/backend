@@ -35,6 +35,7 @@ function withPromoTotal<T extends { promo_unit_price: string | null; vat_rate: s
 const PRODUCT_COLUMNS = `
   p.id, p.name, p.slug, p.brand, p.barcode, p.image, p.description, p.currency, p.vat_rate,
   p.unit_price, p.total_price, p.qty_in_stock, p.discontinued, p.created_at,
+  p.features, p.specifications, p.how_to_use, p.how_to_maintain, p.ingredients,
   c.name AS category_name, c.slug AS category_slug,
   s.name AS subcategory_name, s.slug AS subcategory_slug,
   promo.promotion_id, promo.promotion_name, promo.discount_type, promo.discount_value, promo.promo_unit_price
@@ -273,17 +274,41 @@ catalogPublicRouter.get('/products/:slug', async (req, res) => {
   const product = rows[0];
   if (!product) return res.status(404).json({ ok: false, error: 'Product not found.' });
 
+  const { rows: gallery } = await pool.query(
+    `SELECT image FROM product_images WHERE product_id = $1 ORDER BY sort_order, id`,
+    [product.id]
+  );
+  // The cover always leads, but a gallery row saved with the exact same path
+  // (a common convention from the import scripts) must not show it twice.
+  const images = [...new Set([product.image, ...gallery.map((g) => g.image)].filter(Boolean))];
+
   const { rows: related } = await pool.query(
     `SELECT p.id, p.name, p.slug, p.image, p.brand, p.unit_price, p.total_price, p.currency,
             p.qty_in_stock, p.discontinued, p.created_at
      FROM products p
      WHERE p.subcategory_id = $1 AND p.id <> $2 AND NOT p.discontinued
      ORDER BY random()
-     LIMIT 8`,
+     LIMIT 24`,
     [product.subcategory_id, product.id]
   );
 
-  res.json({ ok: true, product: withPromoTotal(product), related });
+  // "Variant" swatches (Amazon-style colour/size options): other products in the
+  // same subcategory whose name is a close trigram match - i.e. same base product,
+  // different size/flavour/colour (e.g. "PAMPERS NO 3 SMALL" vs "PAMPERS NO 4 SMALL").
+  // Uses the pg_trgm similarity() already indexed on products.name.
+  const { rows: variants } = await pool.query(
+    `SELECT p.id, p.name, p.slug, p.image, p.unit_price, p.total_price, p.currency,
+            p.qty_in_stock, p.discontinued,
+            similarity(p.name, $2) AS sim
+     FROM products p
+     WHERE p.subcategory_id = $1 AND p.id <> $3 AND NOT p.discontinued
+       AND similarity(p.name, $2) > 0.35
+     ORDER BY sim DESC
+     LIMIT 8`,
+    [product.subcategory_id, product.name, product.id]
+  );
+
+  res.json({ ok: true, product: { ...withPromoTotal(product), images }, related, variants });
 });
 
 /**
@@ -340,71 +365,23 @@ catalogPublicRouter.get('/promotions', async (_req, res) => {
 });
 
 /**
- * GET /api/catalog/most-viewed
- * The category with the most recorded product-page views, and its
- * most-viewed products within it - powers the homepage "Most viewed in X"
- * rail. There's no review/rating system, so real page-view counts (from
- * visitor tracking) stand in for "most rated". Returns category: null when
- * there's no view data yet.
+ * GET /api/catalog/popular-products
+ * Hand-curated homepage "Popular products" rail (products.is_featured) -
+ * see the schema.sql comment above that column. Deliberately not an
+ * auto-ranked "most viewed" list: view counts pulled in whatever a stray
+ * click surfaced, including unpriced/out-of-stock/mismatched-photo items,
+ * which reads as low-quality on the homepage's most prominent rail.
  */
-catalogPublicRouter.get('/most-viewed', async (_req, res) => {
-  // Joins through the product itself rather than trusting page_views.category_id,
-  // which is only populated for category/subcategory page views, not product ones.
-  // "others" is the misc China-dropship catch-all, not a real merchandising
-  // category, so it's excluded from ever being featured here.
-  const { rows: topCategoryRows } = await pool.query(`
-    SELECT c.id, c.name, c.slug, count(pv.id) AS views
-    FROM page_views pv
-    JOIN products p ON p.id = pv.product_id
-    JOIN subcategories s ON s.id = p.subcategory_id
-    JOIN categories c ON c.id = s.category_id
-    WHERE pv.page_type = 'product' AND c.slug <> 'others'
-    GROUP BY c.id, c.name, c.slug
-    ORDER BY views DESC
-    LIMIT 1
-  `);
-
-  const category = topCategoryRows[0];
-  if (!category) {
-    return res.json({ ok: true, category: null, products: [] });
-  }
-
-  // LEFT JOIN so the list always fills out to a real top-10 rather than only
-  // showing the handful of products that happen to have a recorded view -
-  // unviewed products rank after viewed ones (view_count 0), newest first.
-  const { rows: ranked } = await pool.query(
-    `SELECT p.id, count(pv.id) AS view_count
-     FROM products p
-     JOIN subcategories s ON s.id = p.subcategory_id
-     LEFT JOIN page_views pv ON pv.product_id = p.id AND pv.page_type = 'product'
-     WHERE s.category_id = $1 AND NOT p.discontinued
-     GROUP BY p.id
-     ORDER BY view_count DESC, p.created_at DESC, p.id
-     LIMIT 10`,
-    [category.id]
-  );
-
-  if (ranked.length === 0) {
-    return res.json({ ok: true, category: null, products: [] });
-  }
-
-  const viewCounts = new Map(ranked.map((r) => [r.id, Number(r.view_count)]));
+catalogPublicRouter.get('/popular-products', async (_req, res) => {
   const { rows: products } = await pool.query(
     `SELECT ${PRODUCT_COLUMNS}
      FROM products p
      JOIN subcategories s ON s.id = p.subcategory_id
      JOIN categories c ON c.id = s.category_id
      ${PROMO_JOIN}
-     WHERE p.id = ANY($1::int[])`,
-    [ranked.map((r) => r.id)]
+     WHERE p.is_featured AND NOT p.discontinued
+     ORDER BY p.featured_sort_order NULLS LAST, p.id`
   );
 
-  const byId = new Map(products.map((p) => [p.id, withPromoTotal(p)]));
-  const ordered = ranked.map((r) => ({ ...byId.get(r.id), view_count: viewCounts.get(r.id) })).filter((p) => p.id != null);
-
-  res.json({
-    ok: true,
-    category: { id: category.id, name: category.name, slug: category.slug },
-    products: ordered,
-  });
+  res.json({ ok: true, products: products.map(withPromoTotal) });
 });
