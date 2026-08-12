@@ -216,10 +216,10 @@ const CATEGORY_KEYWORDS = [
   ['oral-care-accessories', /toothpaste|dentifrice|oral.?care|whitening (gel|pen|strip)|denture|brosse a dents?|blanchiment dentaire|teeth whitening/i],
   ['baby-milk-powder', /\binfant (milk|formula)\b|\bfollow.?on milk\b|\bapt[ao]mil\b|\bnan\b.*(milk|formula|optipro)|nutrilon|lait (premiere|infantile)/i],
   ['baby-food-cereals', /baby (food|cereal|porridge|puree)|cereal.*(baby|infant)/i],
-  ['baby-bottles-other-dinning-utensils', /baby bottle|feeding bottle|biberon|sippy cup|pacifier|sucette|teether/i],
+  ['baby-bottles-other-dining-utensils', /baby bottle|feeding bottle|biberon|sippy cup|pacifier|sucette|teether/i],
   ['baby-diapering-accessories-products', /\bdiaper|nappy|couche\b/i],
   ['baby-cosmetics-baby-skincare-products', /\bbaby (lotion|shampoo|oil|powder|wash|cream)\b/i],
-  ['pregnant-breastfiding-mother', /pregnan|breastfeed|breast pump|maternity|nursing pad|ovulation test/i],
+  ['pregnant-breastfeeding-mother', /pregnan|breastfeed|breast pump|maternity|nursing pad|ovulation test/i],
   ['feminine-intimate-care-toiletries', /intimate (wash|wipe|care)|sanitary (pad|napkin)|tampon|menstrual|panty ?liner/i],
   ['father-care-grooming', /shaving|razor|beard|aftershave/i],
   ['diets-natural-remedy-food-supplements', /supplement|vitamin|collagen|omega.?3|multivitamin|herbal|capsule|\d+\s*(caps|tabs)\b/i],
@@ -236,7 +236,7 @@ const CATEGORY_KEYWORDS = [
   ['sexual-health-accessories-products', /condom|lubricant|sexual/i],
   ['medicated-flagrance-parfums-roll-ons', /perfume|parfum|eau de (toilette|parfum)|roll.?on/i],
   ['haircare-products-accessories', /hair (shampoo|conditioner|treatment|serum|loss|growth)|trioxidil|minoxidil|\bshampoo\b|\bconditioner\b/i],
-  ['over-the-counter-medicines-and-topical', /\bparacetamol|ibuprofen|aspirin\b|\bsyrup\b|\bointment\b|antiseptic/i],
+  ['over-the-counter-medicines-and-topicals', /\bparacetamol|ibuprofen|aspirin\b|\bsyrup\b|\bointment\b|antiseptic/i],
 ];
 
 function guessSubcategory(name) {

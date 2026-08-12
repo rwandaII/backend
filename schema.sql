@@ -127,6 +127,18 @@ ALTER TABLE users ADD COLUMN IF NOT EXISTS phone_verified_at TIMESTAMPTZ;
 
 CREATE UNIQUE INDEX IF NOT EXISTS idx_users_phone ON users(phone) WHERE phone IS NOT NULL;
 
+-- A customer's saved/"liked" products. Requires an account (no anonymous
+-- wishlist) so it follows the customer across devices/browsers instead of
+-- living in localStorage.
+CREATE TABLE IF NOT EXISTS wishlist_items (
+  user_id     INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  product_id  INTEGER NOT NULL REFERENCES products(id) ON DELETE CASCADE,
+  added_at    TIMESTAMPTZ NOT NULL DEFAULT now(),
+  PRIMARY KEY (user_id, product_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_wishlist_items_product_id ON wishlist_items(product_id);
+
 -- Email/SMS verification and password-reset codes. The raw code/token is
 -- never stored - only its hash - so a database dump can't be used to log in.
 CREATE TABLE IF NOT EXISTS verification_codes (
@@ -168,15 +180,23 @@ CREATE TABLE IF NOT EXISTS orders (
   -- provider (and never prompt/charge the customer) a second time.
   checkout_response  JSONB,
   user_id            INTEGER REFERENCES users(id) ON DELETE CASCADE,
+  -- Set once an admin has seen a paid order and clicked "Approve" in the
+  -- dashboard - drives the unread-notification badge. NULL means it's paid
+  -- but nobody has acknowledged it yet.
+  reviewed_at        TIMESTAMPTZ,
+  reviewed_by        INTEGER REFERENCES admins(id) ON DELETE SET NULL,
   created_at         TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at         TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
 ALTER TABLE orders ADD COLUMN IF NOT EXISTS checkout_response JSONB;
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS reviewed_at TIMESTAMPTZ;
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS reviewed_by INTEGER REFERENCES admins(id) ON DELETE SET NULL;
 
 CREATE INDEX IF NOT EXISTS idx_orders_tx_ref ON orders(tx_ref);
 CREATE INDEX IF NOT EXISTS idx_orders_provider_ref ON orders(provider_ref);
 CREATE INDEX IF NOT EXISTS idx_orders_user_id ON orders(user_id);
+CREATE INDEX IF NOT EXISTS idx_orders_unreviewed ON orders(status, reviewed_at) WHERE status = 'paid' AND reviewed_at IS NULL;
 
 -- Append-only audit trail. Every status transition gets a row here instead
 -- of just being overwritten on `orders` - needed to investigate disputes.

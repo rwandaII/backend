@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { z } from 'zod';
 import { pool } from '../db.js';
-import { listOrders, updateOrder } from '../orders.js';
+import { listOrders, updateOrder, markOrderReviewed, countUnreviewedOrders } from '../orders.js';
 
 export const adminOrdersRouter = Router();
 
@@ -21,6 +21,15 @@ const MOMO_FILTER = `(provider IN ('paypack', 'call') OR (provider = 'flutterwav
  */
 adminOrdersRouter.get('/', async (_req, res) => {
   res.json({ ok: true, orders: await listOrders() });
+});
+
+/**
+ * GET /api/admin/orders/unreviewed-count
+ * Paid orders nobody has clicked "Approve" on yet - polled by the dashboard
+ * to drive the notification bell badge.
+ */
+adminOrdersRouter.get('/unreviewed-count', async (_req, res) => {
+  res.json({ ok: true, count: await countUnreviewedOrders() });
 });
 
 /**
@@ -91,6 +100,21 @@ adminOrdersRouter.patch('/:txRef', async (req, res) => {
   if (!parsed.success) return fail(res, 400, 'status must be "paid" or "failed".');
 
   const order = await updateOrder(req.params.txRef, { status: parsed.data.status });
+  if (!order) return fail(res, 404, 'Order not found.', 'NOT_FOUND');
+
+  res.json({ ok: true, order });
+});
+
+/**
+ * PATCH /api/admin/orders/:txRef/review
+ * The dashboard "Approve" button - acknowledges a paid order was seen, so
+ * it drops off the unread-notification badge. Records which admin approved it.
+ */
+adminOrdersRouter.patch('/:txRef/review', async (req, res) => {
+  const adminId = req.admin?.sub;
+  if (!adminId) return fail(res, 401, 'Sign in to the dashboard first.', 'UNAUTHENTICATED');
+
+  const order = await markOrderReviewed(req.params.txRef, adminId);
   if (!order) return fail(res, 404, 'Order not found.', 'NOT_FOUND');
 
   res.json({ ok: true, order });

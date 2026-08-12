@@ -10,10 +10,11 @@ import hpp from 'hpp';
 import { config, assertConfigured } from './config.js';
 import { loadCatalog, logCatalogWarnings, catalogStats } from './catalog.js';
 import { apiLimiter, authLimiter, assistantLimiter } from './rate-limit.js';
-import { requireAdminAuth } from './auth/middleware.js';
+import { requireAdminAuth, requireUserAuth } from './auth/middleware.js';
 import { checkoutRouter } from './routes/checkout.js';
 import { webhookRouter } from './routes/webhook.js';
 import { authRouter } from './routes/auth.js';
+import { wishlistRouter } from './routes/wishlist.js';
 import { adminAuthRouter } from './routes/admin-auth.js';
 import { adminCatalogRouter } from './routes/admin-catalog.js';
 import { adminAdminsRouter } from './routes/admin-admins.js';
@@ -77,6 +78,8 @@ app.use('/api/auth/register', authLimiter);
 app.use('/api/auth/forgot-password', authLimiter);
 app.use('/api/auth/resend-code', authLimiter);
 app.use('/api/auth', authRouter);
+
+app.use('/api/wishlist', requireUserAuth, wishlistRouter);
 
 app.use('/api/admin/auth/login', authLimiter);
 app.use('/api/admin/auth', adminAuthRouter);

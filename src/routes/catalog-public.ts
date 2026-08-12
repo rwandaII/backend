@@ -4,7 +4,7 @@ import { pool } from '../db.js';
 export const catalogPublicRouter = Router();
 
 /** Shared LATERAL join: the best active promotion for a product, if any, with its discounted unit price already computed. */
-const PROMO_JOIN = `
+export const PROMO_JOIN = `
   LEFT JOIN LATERAL (
     SELECT pr.id AS promotion_id, pr.name AS promotion_name, pr.discount_type, pr.discount_value,
            CASE WHEN pr.discount_type = 'percent' THEN ROUND(p.unit_price * (1 - pr.discount_value / 100.0), 2)
@@ -22,7 +22,7 @@ const PROMO_JOIN = `
 `;
 
 /** Postgres numeric columns arrive as strings - Number() them before arithmetic. */
-function withPromoTotal<T extends { promo_unit_price: string | null; vat_rate: string }>(row: T) {
+export function withPromoTotal<T extends { promo_unit_price: string | null; vat_rate: string }>(row: T) {
   return {
     ...row,
     promo_total_price:
@@ -32,7 +32,7 @@ function withPromoTotal<T extends { promo_unit_price: string | null; vat_rate: s
   };
 }
 
-const PRODUCT_COLUMNS = `
+export const PRODUCT_COLUMNS = `
   p.id, p.name, p.slug, p.brand, p.barcode, p.image, p.description, p.currency, p.vat_rate,
   p.unit_price, p.total_price, p.qty_in_stock, p.discontinued, p.created_at,
   p.features, p.specifications, p.how_to_use, p.how_to_maintain, p.ingredients,

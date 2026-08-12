@@ -36,6 +36,8 @@ export interface Order {
   providerRef?: string;
   paymentType?: string;
   failureReason?: string;
+  reviewedAt?: string;
+  reviewedBy?: number;
 }
 
 interface OrderRow {
@@ -54,6 +56,8 @@ interface OrderRow {
   customer_notes: string | null;
   cart: PricedCart;
   checkout_response: unknown;
+  reviewed_at: string | null;
+  reviewed_by: number | null;
   created_at: string;
   updated_at: string;
 }
@@ -67,6 +71,8 @@ function toOrder(row: OrderRow): Order {
     providerRef: row.provider_ref ?? undefined,
     paymentType: row.payment_type ?? undefined,
     failureReason: row.failure_reason ?? undefined,
+    reviewedAt: row.reviewed_at ?? undefined,
+    reviewedBy: row.reviewed_by ?? undefined,
     customer: {
       name: row.customer_name,
       email: row.customer_email,
@@ -212,4 +218,36 @@ export async function updateOrder(
 export async function listOrders(): Promise<Order[]> {
   const { rows } = await pool.query<OrderRow>(`SELECT * FROM orders ORDER BY created_at DESC`);
   return rows.map(toOrder);
+}
+
+/**
+ * Mark a paid order as reviewed - the dashboard "Approve" action. Records
+ * which admin did it, and writes an order_events row for the audit trail.
+ * Only makes sense for a 'paid' order, but doesn't hard-block other
+ * statuses - an admin correcting a mistake shouldn't be fought by the API.
+ */
+export async function markOrderReviewed(txRef: string, adminId: number): Promise<Order | null> {
+  const { rows } = await pool.query<OrderRow>(
+    `UPDATE orders SET reviewed_at = now(), reviewed_by = $2, updated_at = now()
+     WHERE tx_ref = $1
+     RETURNING *`,
+    [txRef, adminId]
+  );
+  const updated = rows[0];
+  if (!updated) return null;
+
+  await pool.query(
+    `INSERT INTO order_events (order_id, event_type, detail) VALUES ($1, 'reviewed', $2)`,
+    [updated.id, JSON.stringify({ adminId })]
+  );
+
+  return toOrder(updated);
+}
+
+/** Paid orders nobody has acknowledged yet - drives the admin dashboard's notification badge. */
+export async function countUnreviewedOrders(): Promise<number> {
+  const { rows } = await pool.query<{ count: string }>(
+    `SELECT count(*) FROM orders WHERE status = 'paid' AND reviewed_at IS NULL`
+  );
+  return Number(rows[0]?.count ?? 0);
 }
